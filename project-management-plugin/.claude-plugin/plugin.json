@@ -1,0 +1,17 @@
+{
+  "name": "project-management-plugin",
+  "version": "1.0.0",
+  "description": "Project lifecycle management including git workflows, code review, and system architecture planning",
+  "author": {
+    "name": "Thurston Sandberg"
+  },
+  "keywords": [
+    "git",
+    "commit",
+    "pr-review",
+    "code-review",
+    "architecture",
+    "project-management",
+    "workflow-automation"
+  ]
+}

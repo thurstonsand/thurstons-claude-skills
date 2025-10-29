@@ -1,0 +1,15 @@
+{
+  "name": "homelab-plugin",
+  "version": "1.0.0",
+  "description": "Skills for managing homelab infrastructure including remote server management",
+  "author": {
+    "name": "Thurston Sandberg"
+  },
+  "keywords": [
+    "homelab",
+    "truenas",
+    "docker",
+    "infrastructure",
+    "remote-management"
+  ]
+}
