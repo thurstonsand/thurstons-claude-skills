@@ -1,22 +1,22 @@
 {
-  "name": "claude-skills-marketplace",
+  "name": "thurstons-skills",
   "owner": {
     "name": "Thurston Sandberg"
   },
   "plugins": [
     {
-      "name": "project-management-plugin",
-      "source": "./project-management-plugin",
+      "name": "project-management",
+      "source": "./project-management",
       "description": "Project lifecycle management including git workflows, code review, and system architecture planning"
     },
     {
-      "name": "meta-plugin",
-      "source": "./meta-plugin",
+      "name": "meta",
+      "source": "./meta",
       "description": "Tools for creating and managing Claude Code skills and plugins"
     },
     {
-      "name": "homelab-plugin",
-      "source": "./homelab-plugin",
+      "name": "homelab",
+      "source": "./homelab",
       "description": "Skills for managing homelab infrastructure including remote server management"
     }
   ]

@@ -7,11 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a **plugin marketplace** for Claude Code that hosts multiple independent plugins. Each plugin contains Agent Skills, slash commands, and agents that extend Claude's capabilities with specialized workflows and domain expertise.
 
 **Architecture pattern:**
+
 - Marketplace → Plugins → Skills/Commands/Agents
 - Each plugin is self-contained with its own configuration
 - Skills are automatically discovered and triggered based on task context
 
 **Current plugins:**
+
 1. **project-management-plugin**: Git workflows, code review, system architecture
 2. **meta-plugin**: Tools for creating and managing skills/plugins
 3. **homelab-plugin**: Infrastructure management (TrueNAS, Docker operations)
@@ -21,11 +23,13 @@ This is a **plugin marketplace** for Claude Code that hosts multiple independent
 ### Creating a New Skill
 
 Initialize a new skill with template structure:
+
 ```bash
 python /home/thurstonsand/Code/claude-skills/meta-plugin/skills/skill-creator/scripts/init_skill.py <skill-name> --path <plugin-path>/skills
 ```
 
 Example:
+
 ```bash
 python /home/thurstonsand/Code/claude-skills/meta-plugin/skills/skill-creator/scripts/init_skill.py my-new-skill --path project-management-plugin/skills
 ```
@@ -33,11 +37,13 @@ python /home/thurstonsand/Code/claude-skills/meta-plugin/skills/skill-creator/sc
 ### Validating and Packaging Skills
 
 Package a skill for distribution (includes validation):
+
 ```bash
 python meta-plugin/skills/skill-creator/scripts/package_skill.py <path/to/skill-folder> [output-directory]
 ```
 
 Example:
+
 ```bash
 python meta-plugin/skills/skill-creator/scripts/package_skill.py project-management-plugin/skills/git-commit-helper ./dist
 ```
@@ -45,12 +51,14 @@ python meta-plugin/skills/skill-creator/scripts/package_skill.py project-managem
 ### Testing Skills Locally
 
 After making changes to skills, restart Claude Code to reload:
+
 ```bash
 # In Claude Code CLI
 /restart
 ```
 
 Or test by adding the marketplace locally:
+
 ```bash
 /plugin marketplace add /home/thurstonsand/Code/claude-skills
 /plugin install <plugin-name>@claude-skills-marketplace
@@ -93,13 +101,13 @@ claude-skills/                          # Marketplace root
 Every skill follows this pattern:
 
 **Required: SKILL.md**
+
 ```yaml
 ---
-name: skill-identifier              # kebab-case, max 64 chars
-description: What it does and WHEN to use it  # max 1024 chars, include trigger scenarios
-allowed-tools: [optional]           # Restrict tool access if needed
+name: skill-identifier # kebab-case, max 64 chars
+description: What it does and WHEN to use it # max 1024 chars, include trigger scenarios
+allowed-tools: [optional] # Restrict tool access if needed
 ---
-
 # Skill Name
 
 Markdown instructions for Claude (use imperative/infinitive form, not second person)
@@ -110,11 +118,13 @@ Markdown instructions for Claude (use imperative/infinitive form, not second per
 Three types of bundled resources, each with different context management:
 
 1. **scripts/** - Executable code (Python/Bash)
+
    - Purpose: Deterministic operations, complex escaping, automation
    - Context: May be executed without loading into context, but can be read for patching
    - Examples: `init_skill.py`, `docker_exec_python.sh`, `create_pr.py`
 
 2. **references/** - Documentation for context loading
+
    - Purpose: Large documentation, API specs, schemas, detailed guides
    - Context: Loaded into context only when Claude determines it's needed
    - Examples: `server_layout.md`, API references, workflow guides
@@ -126,25 +136,30 @@ Three types of bundled resources, each with different context management:
    - Examples: LICENSE.txt, document templates, boilerplate code
 
 **Path conventions:**
+
 - Always use forward slashes in SKILL.md references: `scripts/helper.py` (not `scripts\helper.py`)
 - Paths are relative to the skill directory
 
 ### Naming Conventions
 
 **Plugins:**
+
 - Kebab-case with `-plugin` suffix
 - Examples: `project-management-plugin`, `meta-plugin`, `homelab-plugin`
 
 **Skills:**
+
 - Kebab-case identifiers
 - Descriptive of purpose
 - Common patterns: `verb-noun` (git-commit-helper), `service-operation` (truenas-docker-ops), `compound-noun` (skill-creator)
 
 **Commands:**
+
 - Lowercase, often acronyms or short verbs
 - Examples: `/ggc`, `/system-architect`
 
 **Directories:**
+
 - All lowercase
 - Standard directories: `skills/`, `commands/`, `agents/`, `scripts/`, `references/`, `assets/`
 
@@ -161,6 +176,7 @@ This allows the marketplace to scale to hundreds of skills without context bloat
 ### Documentation Style
 
 All skill documentation uses **imperative/infinitive form** (not second person):
+
 - ✓ "To accomplish X, do Y"
 - ✓ "Run the command..."
 - ✗ "You should do X"
@@ -171,7 +187,9 @@ This maintains consistency for AI consumption and follows Claude Code convention
 ## Key Configuration Files
 
 ### `.claude-plugin/marketplace.json`
+
 Registers the marketplace and all plugins. Uses relative paths to allow plugins to be self-contained:
+
 ```json
 {
   "name": "claude-skills-marketplace",
@@ -187,7 +205,9 @@ Registers the marketplace and all plugins. Uses relative paths to allow plugins 
 ```
 
 ### `<plugin>/.claude-plugin/plugin.json`
+
 Per-plugin configuration with versioning and discovery metadata:
+
 ```json
 {
   "name": "plugin-name",
@@ -199,7 +219,9 @@ Per-plugin configuration with versioning and discovery metadata:
 ```
 
 ### `.claude/settings.local.json`
+
 Local development permissions for running scripts and reading files without prompts:
+
 ```json
 {
   "permissions": {
@@ -218,11 +240,13 @@ Local development permissions for running scripts and reading files without prom
 ### When to Create a New Skill vs. Modify Existing
 
 **Create a new skill when:**
+
 - Adding functionality for a new domain or use case
 - The functionality is triggered by different user scenarios
 - The skill would have a distinct description that helps Claude decide when to use it
 
 **Modify existing skill when:**
+
 - Enhancing or fixing existing functionality
 - Adding examples or clarifying instructions
 - The change fits within the existing skill's trigger scenarios
@@ -244,18 +268,21 @@ Local development permissions for running scripts and reading files without prom
 ### Bundled Resource Guidelines
 
 **When to use scripts/:**
+
 - Complex shell operations with escaping (e.g., nested SSH + docker exec)
 - API interactions (e.g., GitHub PR creation)
 - Data processing utilities
 - Any deterministic operation that's better as executable code
 
 **When to use references/:**
+
 - API documentation
 - Database schemas
 - Workflow guides longer than ~2k words
 - Domain-specific knowledge that informs Claude's process
 
 **When to use assets/:**
+
 - Document templates (PPTX, DOCX, etc.)
 - Boilerplate code directories
 - License files
@@ -266,6 +293,7 @@ Local development permissions for running scripts and reading files without prom
 ### Validation Process
 
 The `package_skill.py` script validates:
+
 - YAML frontmatter structure and required fields
 - Naming conventions (kebab-case, max 64 chars)
 - Description quality (must include trigger scenarios)
@@ -273,6 +301,7 @@ The `package_skill.py` script validates:
 - Directory structure
 
 Run validation:
+
 ```bash
 python meta-plugin/skills/skill-creator/scripts/package_skill.py <skill-path>
 ```
@@ -288,6 +317,7 @@ python meta-plugin/skills/skill-creator/scripts/package_skill.py <skill-path>
 ### Integration Testing
 
 After creating or modifying skills:
+
 1. Package the skill to validate structure
 2. Test installation from local marketplace
 3. Verify skill appears in plugin list: `/plugin list`
@@ -323,7 +353,8 @@ After creating or modifying skills:
 ### Script Execution Pattern
 
 Skills with scripts follow this pattern in SKILL.md:
-```markdown
+
+````markdown
 ## Using the Helper Script
 
 Execute the script to [accomplish task]:
@@ -331,7 +362,9 @@ Execute the script to [accomplish task]:
 ```bash
 python skills/<skill-name>/scripts/helper.py [args]
 ```
-```
+````
+
+````
 
 The script path is always relative to the repository root.
 
@@ -352,11 +385,12 @@ Key sections:
 - Authentication: Line 15-45
 - Endpoints: Line 50-200
 - Error codes: Line 205-250
-```
+````
 
 ### Multi-Step Workflow Pattern
 
 Skills that guide multi-step workflows should:
+
 1. Start with a decision tree or quick start guide
 2. Break steps into clear numbered sections
 3. Include examples with realistic user requests
@@ -365,6 +399,7 @@ Skills that guide multi-step workflows should:
 ## Documentation Requirements
 
 When adding or modifying skills:
+
 1. **SKILL.md**: Always update with clear, imperative instructions
 2. **README.md**: Update marketplace README if adding new plugin or significantly changing functionality
 3. **plugin.json**: Update version number following semantic versioning

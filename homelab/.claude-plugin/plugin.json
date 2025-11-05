@@ -1,6 +1,6 @@
 {
-  "name": "homelab-plugin",
-  "version": "1.0.1",
+  "name": "homelab",
+  "version": "1.1.0",
   "description": "Skills for managing homelab infrastructure including remote server management",
   "author": {
     "name": "Thurston Sandberg"

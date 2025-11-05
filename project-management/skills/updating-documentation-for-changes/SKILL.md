@@ -58,6 +58,8 @@ Check EVERY one that exists in the repo (no rationalization):
 
 **If a core doc doesn't exist:** Note its absence but don't create it as part of this commit.
 
+**IMPORTANT: When you find a documentation file, read it in its entirety.** Do not skim or spot-check - read the complete file to understand its full context and identify all potential references to your changes.
+
 ### 3. Project-Specific Documentation
 
 Check documentation specific to this project type:
@@ -128,7 +130,7 @@ Do NOT update higher-level docs if your change:
 
 For each outdated doc:
 
-1. Read the full section (not just the line that mentions it)
+1. **Read the entire file** (not just the section that mentions it)
 2. Update to match new behavior
 3. Check examples still work
 4. Verify cross-references are accurate
@@ -159,6 +161,7 @@ If you're thinking any of these, you're about to skip necessary docs:
 | "The change is in the code itself"                    | Code ≠ documentation. Users read docs, not your diff.                    |
 | "I found unrelated outdated docs, I should fix those" | Note for later. Stay focused on staged changes.                          |
 | "Found one issue, good enough"                        | One issue doesn't mean you're done. Complete the sweep.                  |
+| "I'll just skim the file for relevant parts"          | Skimming misses context. Read the entire file to catch all references.   |
 
 **All of these mean: Continue with the systematic sweep.**
 
