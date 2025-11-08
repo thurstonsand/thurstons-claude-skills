@@ -16,7 +16,7 @@ This is a **plugin marketplace** for Claude Code that hosts multiple independent
 
 1. **project-management-plugin**: Git workflows, code review, system architecture
 2. **meta-plugin**: Tools for creating and managing skills/plugins
-3. **homelab-plugin**: Infrastructure management (TrueNAS, Docker operations)
+3. **homelab-plugin**: Infrastructure management (TrueNAS, Docker operations, interactive tmux workflows)
 
 ## Common Development Commands
 

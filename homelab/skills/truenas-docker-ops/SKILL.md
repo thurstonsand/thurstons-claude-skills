@@ -54,12 +54,12 @@ ssh truenas cat /mnt/performance/home/admin/Develop/nixonomicon/nas/stacks/<cont
 For complex Python execution requiring nested heredocs and escape sequences, use the provided helper script:
 
 ```bash
-~/.claude/plugins/marketplaces/claude-skills-marketplace/homelab-plugin/skills/truenas-docker-ops/scripts/docker_exec_python.sh <container_name> '<python_code>'
+scripts/docker_exec_python.sh <container_name> '<python_code>'
 ```
 
 **Example:**
 ```bash
-~/.claude/plugins/marketplaces/claude-skills-marketplace/homelab-plugin/skills/truenas-docker-ops/scripts/docker_exec_python.sh anypod '
+scripts/docker_exec_python.sh anypod '
 import sqlite3, json
 conn = sqlite3.connect("/data/db/anypod.db")
 conn.row_factory = sqlite3.Row
@@ -87,12 +87,12 @@ print(f"{status}")
 For direct SQLite queries, use the provided helper script:
 
 ```bash
-~/.claude/plugins/marketplaces/claude-skills-marketplace/homelab-plugin/skills/truenas-docker-ops/scripts/docker_exec_sqlite.sh <container_name> <db_path> '<sql_query>'
+scripts/docker_exec_sqlite.sh <container_name> <db_path> '<sql_query>'
 ```
 
 **Example:**
 ```bash
-~/.claude/plugins/marketplaces/claude-skills-marketplace/homelab-plugin/skills/truenas-docker-ops/scripts/docker_exec_sqlite.sh anypod /data/db/anypod.db '
+scripts/docker_exec_sqlite.sh anypod /data/db/anypod.db '
 SELECT feed_id, status, COUNT(*) as count
 FROM download
 GROUP BY feed_id, status;
@@ -152,12 +152,12 @@ For complete directory structure details and container patterns, see `references
 
 **`docker_exec_python.sh`** - Execute Python code inside a Docker container on TrueNAS
 - Handles complex escape sequences for nested SSH and docker exec with heredoc
-- Usage: `~/.claude/plugins/marketplaces/claude-skills-marketplace/homelab-plugin/skills/truenas-docker-ops/scripts/docker_exec_python.sh <container_name> '<python_code>'`
+- Usage: `scripts/docker_exec_python.sh <container_name> '<python_code>'`
 - Avoids manual trial-and-error of nested quoting
 
 **`docker_exec_sqlite.sh`** - Execute SQLite queries inside a Docker container on TrueNAS
 - Handles complex escape sequences for SQL queries
-- Usage: `~/.claude/plugins/marketplaces/claude-skills-marketplace/homelab-plugin/skills/truenas-docker-ops/scripts/docker_exec_sqlite.sh <container_name> <db_path> '<sql_query>'`
+- Usage: `scripts/docker_exec_sqlite.sh <container_name> <db_path> '<sql_query>'`
 - Simplifies database inspection workflows
 
 ### references/

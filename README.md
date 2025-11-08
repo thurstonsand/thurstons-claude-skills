@@ -36,8 +36,9 @@ Skills for managing homelab infrastructure including remote server management.
 
 **Skills included:**
 - **TrueNAS Docker Operations** - Interact with Docker containers on TrueNAS via SSH with helper scripts for complex operations
+- **Using tmux for Interactive Commands** - Drive interactive editors, REPLs, or git workflows through tmux sessions when automation needs a real terminal
 
-**Use when:** Working with containers on remote TrueNAS servers, querying databases, or executing commands.
+**Use when:** Working with containers on remote TrueNAS servers, querying databases, executing commands, or automating interactive terminal tools via tmux.
 
 ## Installation
 
