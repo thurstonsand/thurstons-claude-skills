@@ -1,5 +1,6 @@
 ---
 description: Review local docs and create a git commit
+allowed-tools: ["Bash(find:*)"]
 ---
 
 1. use the updating-documentation-for-changes skill to review repo docs

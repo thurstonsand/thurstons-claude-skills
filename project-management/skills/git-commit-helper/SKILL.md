@@ -157,6 +157,10 @@ Migration guide: Update client code to handle new response structure
 
 ## Template workflow
 
+Before you start drafting, read the full text of a few recent commits
+(e.g., `git log -5`) so you can mirror the repository's tone and level of
+detail.
+
 1. **Review changes**: `git diff --staged`
 2. **Identify type**: Is it feat, fix, refactor, etc.?
 3. **Determine scope**: What part of the codebase?

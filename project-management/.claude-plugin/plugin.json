@@ -1,6 +1,6 @@
 {
   "name": "project-management",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Project lifecycle management including git workflows, code review, and system architecture planning",
   "author": {
     "name": "Thurston Sandberg"
