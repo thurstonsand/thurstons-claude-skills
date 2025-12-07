@@ -113,8 +113,7 @@ claude-skills/                    # Marketplace root
 │   └── skills/
 │       └── truenas-docker-ops/
 │           ├── SKILL.md
-│           ├── scripts/
-│           └── references/
+│           └── scripts/
 └── README.md
 ```
 

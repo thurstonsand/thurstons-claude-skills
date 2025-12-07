@@ -1,170 +1,68 @@
 ---
 name: truenas-docker-ops
-description: Interact with Docker containers running on a TrueNAS server via SSH. Use this skill when working with containers on the remote TrueNAS server, including querying databases, inspecting logs, executing commands, or managing container state. Particularly useful for complex operations requiring nested SSH and docker exec commands with special escape sequences.
+description: Playbook for anything on the TrueNAS host — consult before touching services, data, or containers. Covers SSH entry, container interaction, and data/layout notes so you can operate safely on TrueNAS.
 ---
 
 # TrueNAS Docker Operations
 
-## Overview
+## Essentials
 
-Enable seamless interaction with Docker containers running on a TrueNAS server accessed via SSH. The skill provides helper scripts for complex nested command execution and reference documentation for server layout and container discovery.
+- Connect: `ssh truenas` (auth pre-configured)
+- Paths: compose `/mnt/performance/home/admin/Develop/nixonomicon/nas/stacks/<container>/compose.yaml`; config `/mnt/performance/docker/<container>/`; large data `/mnt/capacity/watch/<container>/`
+- List containers: `ssh truenas docker ps` | filter `... | grep <container>`
+- Inspect compose: `ssh truenas cat /mnt/performance/home/admin/Develop/nixonomicon/nas/stacks/<container>/compose.yaml`
+- Logs: `ssh truenas docker logs <container>`
+- Exec simple command: `ssh truenas docker exec -i <container> <command>`
+- Inspect details: `ssh truenas docker inspect <container>`
 
-## When to Use This Skill
+## Anypod Data Layout
 
-Use this skill when:
-- Querying databases inside containers on the TrueNAS server
-- Executing Python or SQL code in remote containers
-- Inspecting container logs, status, or configurations
-- Working with containers where nested SSH and docker exec commands require complex escape sequences
-- Discovering container locations, volume mappings, or configurations on the server
+- Host data root: `/mnt/capacity/watch/anypod/data` (binds to `/data` in container)
+  - Media downloads live in `media/<feed_id>/` (one directory per feed)
+  - Transcripts stored in `transcripts/<feed_id>/`
+  - DB at `/data/db/anypod.db`
+- DB tables (anypod.db):
+  - `feed` (PK `id`; feed metadata plus `source_type`, `source_url`, `title/subtitle/description`, `language`, `author`, `podcast_type`, `category`, `explicit`, `image_ext`, `transcript_*`, counters like `total_downloads`, `consecutive_failures`, timestamps `created_at/updated_at/last_successful_sync/last_failed_sync/last_rss_generation`)
+  - `download` (PK `feed_id`, `id`; per-episode info: `source_url`, `title`, `published`, `ext`, `mime_type`, `filesize`, `duration`, `status`, timestamps `discovered_at/updated_at/downloaded_at`, optional `remote_thumbnail_url/thumbnail_ext`, `description`, `quality_info`, retry/error fields, `playlist_index`, `download_logs`, transcript fields `transcript_ext/transcript_lang/transcript_source`)
+  - `appstate` (PK `id`; `last_yt_dlp_update`)
+  - `alembic_version` (schema version)
 
-## Server Access
+## Helper Scripts
 
-Access the TrueNAS server using the pre-configured SSH alias:
+- Python (handles nested heredoc/quoting): `scripts/docker_exec_python.sh <container> '<python_code>'`
 
-```bash
-ssh truenas
-```
+  - Example:
 
-Authentication is already configured. For detailed server layout information including directory structure and container patterns, refer to `references/server_layout.md`.
+  ```bash
+  scripts/docker_exec_python.sh anypod '
+  import sqlite3, json
+  conn = sqlite3.connect("/data/db/anypod.db")
+  conn.row_factory = sqlite3.Row
+  rows = conn.execute("SELECT * FROM feed").fetchall()
+  print(json.dumps([dict(r) for r in rows], indent=2))
+  conn.close()
+  '
+  ```
 
-## Core Operations
+  - Tip: avoid dict indexing inside f-strings; pull to vars first to avoid quote escaping issues.
 
-### Discover Running Containers
+- SQLite: `scripts/docker_exec_sqlite.sh <container> <db_path> '<sql_query>'`
+  - Example:
+  ```bash
+  scripts/docker_exec_sqlite.sh anypod /data/db/anypod.db '
+  SELECT feed_id, status, COUNT(*) AS count
+  FROM download
+  GROUP BY feed_id, status;
+  '
+  ```
 
-List all running containers:
-```bash
-ssh truenas docker ps
-```
+## When to Use Scripts vs Direct
 
-Filter for specific containers:
-```bash
-ssh truenas docker ps | grep <container-name>
-```
+- Use scripts for multi-line Python/SQL or anything with tricky quoting.
+- Use direct `docker exec` for simple commands, listing, logs, or basic inspection.
 
-### View Container Configuration
+## Quick Examples
 
-Check the docker-compose file for volume mappings, networks, and settings:
-```bash
-ssh truenas cat /mnt/performance/home/admin/Develop/nixonomicon/nas/stacks/<container-name>/docker-compose.yml
-```
-
-### Execute Python Code in Container
-
-For complex Python execution requiring nested heredocs and escape sequences, use the provided helper script:
-
-```bash
-scripts/docker_exec_python.sh <container_name> '<python_code>'
-```
-
-**Example:**
-```bash
-scripts/docker_exec_python.sh anypod '
-import sqlite3, json
-conn = sqlite3.connect("/data/db/anypod.db")
-conn.row_factory = sqlite3.Row
-result = conn.execute("SELECT * FROM feed").fetchall()
-print(json.dumps([dict(r) for r in result], indent=2))
-conn.close()
-'
-```
-
-The script handles complex quoting and escape sequences for:
-1. SSH connection to remote server
-2. Docker exec with stdin input
-3. Python code containing quotes, newlines, and special characters
-
-**Note**: When using dictionary access in f-strings (e.g., `f"{dict['key']}"`), extract to variables first to avoid quote escaping issues:
-```python
-# Instead of: print(f"{row['status']}")
-# Use:
-status = row["status"]
-print(f"{status}")
-```
-
-### Execute SQLite Queries in Container
-
-For direct SQLite queries, use the provided helper script:
-
-```bash
-scripts/docker_exec_sqlite.sh <container_name> <db_path> '<sql_query>'
-```
-
-**Example:**
-```bash
-scripts/docker_exec_sqlite.sh anypod /data/db/anypod.db '
-SELECT feed_id, status, COUNT(*) as count
-FROM download
-GROUP BY feed_id, status;
-'
-```
-
-### View Container Logs
-
-```bash
-ssh truenas docker logs <container-name>
-```
-
-Add `-f` to follow logs in real-time:
-```bash
-ssh truenas docker logs -f <container-name>
-```
-
-### Simple Command Execution
-
-For straightforward commands without complex escaping needs:
-```bash
-ssh truenas docker exec -i <container-name> <command>
-```
-
-**Example:**
-```bash
-ssh truenas docker exec -i anypod ls -la /data
-```
-
-## Directory Structure Reference
-
-Key locations on the TrueNAS server:
-
-- **Compose files**: `/mnt/performance/home/admin/Develop/nixonomicon/nas/stacks/`
-- **Configs**: `/mnt/performance/docker/`
-- **Large data**: `/mnt/capacity/watch/`
-
-For complete directory structure details and container patterns, see `references/server_layout.md`.
-
-## Determining What to Run Where
-
-**Use helper scripts when:**
-- Executing multi-line Python code in containers
-- Running SQL queries with complex syntax
-- Dealing with nested heredocs or quote escaping
-- The command would require trial-and-error to get the escaping right
-
-**Use direct commands when:**
-- Running simple single commands
-- Viewing logs or status
-- Listing files or inspecting basic container state
-- The operation doesn't involve complex escape sequences
-
-## Resources
-
-### scripts/
-
-**`docker_exec_python.sh`** - Execute Python code inside a Docker container on TrueNAS
-- Handles complex escape sequences for nested SSH and docker exec with heredoc
-- Usage: `scripts/docker_exec_python.sh <container_name> '<python_code>'`
-- Avoids manual trial-and-error of nested quoting
-
-**`docker_exec_sqlite.sh`** - Execute SQLite queries inside a Docker container on TrueNAS
-- Handles complex escape sequences for SQL queries
-- Usage: `scripts/docker_exec_sqlite.sh <container_name> <db_path> '<sql_query>'`
-- Simplifies database inspection workflows
-
-### references/
-
-**`server_layout.md`** - Complete TrueNAS server structure documentation
-- SSH access patterns
-- Directory structure for compose files, configs, and data
-- Container discovery techniques
-- Common container patterns and examples
-- Volume mapping conventions
+- Is `anypod` running? `ssh truenas docker ps | grep anypod`
+- View `anypod` compose: `ssh truenas cat /mnt/performance/home/admin/Develop/nixonomicon/nas/stacks/anypod/compose.yaml`
+- Query `anypod` DB: `scripts/docker_exec_sqlite.sh anypod /data/db/anypod.db "SELECT * FROM feed;"`
