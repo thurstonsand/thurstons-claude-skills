@@ -14,39 +14,10 @@ This is a **plugin marketplace** for Claude Code that hosts multiple independent
 
 **Current plugins:**
 
-1. **project-management-plugin**: Git workflows, code review, system architecture
-2. **meta-plugin**: Tools for creating and managing skills/plugins
-3. **homelab-plugin**: Infrastructure management (TrueNAS, Docker operations, interactive tmux workflows)
+1. **project-management**: Git workflows, code review, system architecture
+2. **homelab**: Infrastructure management (TrueNAS, Docker operations)
 
 ## Common Development Commands
-
-### Creating a New Skill
-
-Initialize a new skill with template structure:
-
-```bash
-python /home/thurstonsand/Code/claude-skills/meta-plugin/skills/skill-creator/scripts/init_skill.py <skill-name> --path <plugin-path>/skills
-```
-
-Example:
-
-```bash
-python /home/thurstonsand/Code/claude-skills/meta-plugin/skills/skill-creator/scripts/init_skill.py my-new-skill --path project-management-plugin/skills
-```
-
-### Validating and Packaging Skills
-
-Package a skill for distribution (includes validation):
-
-```bash
-python meta-plugin/skills/skill-creator/scripts/package_skill.py <path/to/skill-folder> [output-directory]
-```
-
-Example:
-
-```bash
-python meta-plugin/skills/skill-creator/scripts/package_skill.py project-management-plugin/skills/git-commit-helper ./dist
-```
 
 ### Testing Skills Locally
 
@@ -60,8 +31,8 @@ After making changes to skills, restart Claude Code to reload:
 Or test by adding the marketplace locally:
 
 ```bash
-/plugin marketplace add /home/thurstonsand/Code/claude-skills
-/plugin install <plugin-name>@claude-skills-marketplace
+/plugin marketplace add /path/to/thurstons-claude-skills
+/plugin install <plugin-name>@thurstons-skills
 ```
 
 ## Code Architecture
@@ -121,7 +92,7 @@ Three types of bundled resources, each with different context management:
 
    - Purpose: Deterministic operations, complex escaping, automation
    - Context: May be executed without loading into context, but can be read for patching
-   - Examples: `init_skill.py`, `docker_exec_python.sh`, `create_pr.py`
+   - Examples: `docker_exec_python.sh`, `create_pr.py`
 
 2. **references/** - Documentation for context loading
 
@@ -144,8 +115,8 @@ Three types of bundled resources, each with different context management:
 
 **Plugins:**
 
-- Kebab-case with `-plugin` suffix
-- Examples: `project-management-plugin`, `meta-plugin`, `homelab-plugin`
+- Kebab-case identifiers
+- Examples: `project-management`, `homelab`
 
 **Skills:**
 
@@ -156,7 +127,7 @@ Three types of bundled resources, each with different context management:
 **Commands:**
 
 - Lowercase, often acronyms or short verbs
-- Examples: `/ggc`, `/system-architect`
+- Examples: `/gc`, `/pr`, `/system-architect`
 
 **Directories:**
 
@@ -263,7 +234,7 @@ Local development permissions for running scripts and reading files without prom
 
 5. **Tool restrictions**: Use `allowed-tools` in YAML frontmatter for read-only or limited-scope skills.
 
-6. **Validation before packaging**: Always run `package_skill.py` which validates structure, naming, and description quality.
+6. **Validation before deployment**: Test skills locally with `/restart` to verify structure and trigger scenarios.
 
 ### Bundled Resource Guidelines
 
@@ -290,22 +261,6 @@ Local development permissions for running scripts and reading files without prom
 
 ## Testing and Validation
 
-### Validation Process
-
-The `package_skill.py` script validates:
-
-- YAML frontmatter structure and required fields
-- Naming conventions (kebab-case, max 64 chars)
-- Description quality (must include trigger scenarios)
-- SKILL.md file existence
-- Directory structure
-
-Run validation:
-
-```bash
-python meta-plugin/skills/skill-creator/scripts/package_skill.py <skill-path>
-```
-
 ### Local Testing Workflow
 
 1. Make changes to skill files
@@ -318,10 +273,9 @@ python meta-plugin/skills/skill-creator/scripts/package_skill.py <skill-path>
 
 After creating or modifying skills:
 
-1. Package the skill to validate structure
-2. Test installation from local marketplace
-3. Verify skill appears in plugin list: `/plugin list`
-4. Test multiple trigger scenarios to ensure proper activation
+1. Test installation from local marketplace
+2. Verify skill appears in plugin list: `/plugin list`
+3. Test multiple trigger scenarios to ensure proper activation
 
 ## Contributing to the Marketplace
 
@@ -335,18 +289,11 @@ After creating or modifying skills:
 
 ### Adding a New Skill to Existing Plugin
 
-1. Initialize skill:
-   ```bash
-   python meta-plugin/skills/skill-creator/scripts/init_skill.py <skill-name> --path <plugin>/skills
-   ```
-2. Edit `SKILL.md` to replace all TODO items
+1. Create skill directory: `<plugin>/skills/<skill-name>/`
+2. Create `SKILL.md` with YAML frontmatter (name, description) and instructions
 3. Add scripts/references/assets as needed (delete unused directories)
-4. Validate and test:
-   ```bash
-   python meta-plugin/skills/skill-creator/scripts/package_skill.py <plugin>/skills/<skill-name>
-   ```
-5. Test locally with `/restart` and trigger scenarios
-6. Commit to repository
+4. Test locally with `/restart` and trigger scenarios
+5. Commit to repository
 
 ## Important Patterns
 

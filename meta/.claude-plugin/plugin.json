@@ -1,9 +1,0 @@
-{
-  "name": "meta",
-  "version": "1.1.0",
-  "description": "Tools for creating and managing Claude Code skills and plugins",
-  "author": {
-    "name": "Thurston Sandberg"
-  },
-  "keywords": ["skill-creator", "plugin-development", "meta", "tooling"]
-}

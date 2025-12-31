@@ -13,7 +13,8 @@ Project lifecycle management tools for git workflows, code review, and system ar
 - **PR Review Helper** - Create pull requests with interactive review and comprehensive descriptions
 
 **Commands:**
-- **/ggc** - Create a git commit with documentation checks and pre-commit hooks
+- **/gc** - Review documentation and create a git commit
+- **/pr** - Create a pull request with interactive review
 - **/system-architect** - Design new features, modules, or systems with comprehensive architectural analysis
 
 **Agents:**
@@ -21,24 +22,14 @@ Project lifecycle management tools for git workflows, code review, and system ar
 
 **Use when:** Working with git commits, pull requests, code reviews, or designing new system features.
 
-### 2. Meta Plugin (`meta-plugin`)
-
-Tools for creating and managing Claude Code skills and plugins.
-
-**Skills included:**
-- **Skill Creator** - Guide for creating effective Agent Skills with bundled resources and proper structure
-
-**Use when:** Creating or updating Agent Skills and plugins.
-
-### 3. Homelab Plugin (`homelab-plugin`)
+### 2. Homelab Plugin (`homelab-plugin`)
 
 Skills for managing homelab infrastructure including remote server management.
 
 **Skills included:**
 - **TrueNAS Docker Operations** - Interact with Docker containers on TrueNAS via SSH with helper scripts for complex operations
-- **Using tmux for Interactive Commands** - Drive interactive editors, REPLs, or git workflows through tmux sessions when automation needs a real terminal
 
-**Use when:** Working with containers on remote TrueNAS servers, querying databases, executing commands, or automating interactive terminal tools via tmux.
+**Use when:** Working with containers on remote TrueNAS servers, querying databases, or executing commands.
 
 ## Installation
 
@@ -52,12 +43,11 @@ Skills for managing homelab infrastructure including remote server management.
 2. Install the plugins you want:
 ```bash
 # Install all plugins
-/plugin install project-management-plugin@claude-skills-marketplace
-/plugin install meta-plugin@claude-skills-marketplace
-/plugin install homelab-plugin@claude-skills-marketplace
+/plugin install project-management@thurstons-skills
+/plugin install homelab@thurstons-skills
 
 # Or install only specific plugins you need
-/plugin install project-management-plugin@claude-skills-marketplace
+/plugin install project-management@thurstons-skills
 ```
 
 3. Restart Claude Code to activate the skills.
@@ -74,9 +64,8 @@ For testing or contributing:
 
 3. Install plugins:
 ```bash
-/plugin install project-management-plugin@claude-skills-marketplace
-/plugin install meta-plugin@claude-skills-marketplace
-/plugin install homelab-plugin@claude-skills-marketplace
+/plugin install project-management@thurstons-skills
+/plugin install homelab@thurstons-skills
 ```
 
 ## Repository Structure
@@ -85,11 +74,12 @@ For testing or contributing:
 claude-skills/                    # Marketplace root
 ├── .claude-plugin/
 │   └── marketplace.json          # Marketplace configuration
-├── project-management-plugin/    # Project lifecycle plugin
+├── project-management/           # Project lifecycle plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json
 │   ├── commands/
-│   │   ├── ggc.md
+│   │   ├── gc.md
+│   │   ├── pr.md
 │   │   └── system-architect.md
 │   ├── agents/
 │   │   └── code-reviewer.md
@@ -99,15 +89,7 @@ claude-skills/                    # Marketplace root
 │       └── pr-review-helper/
 │           ├── SKILL.md
 │           └── scripts/
-├── meta-plugin/                  # Skill creation plugin
-│   ├── .claude-plugin/
-│   │   └── plugin.json
-│   └── skills/
-│       └── skill-creator/
-│           ├── SKILL.md
-│           ├── scripts/
-│           └── LICENSE.txt
-├── homelab-plugin/               # Homelab infrastructure plugin
+├── homelab/                      # Homelab infrastructure plugin
 │   ├── .claude-plugin/
 │   │   └── plugin.json
 │   └── skills/
@@ -124,12 +106,10 @@ Once installed, Claude will automatically use these skills based on task context
 **Project Management Plugin:**
 - Ask Claude to help with commit messages → uses `git-commit-helper` skill
 - Ask to create a pull request → uses `pr-review-helper` skill
-- Use `/ggc` to create a git commit with documentation checks
+- Use `/gc` to create a git commit with documentation checks
+- Use `/pr` to create a pull request with interactive review
 - Use `/system-architect` to design new features or systems
 - Request code review → uses `code-reviewer` agent
-
-**Meta Plugin:**
-- Ask to create a new skill → uses `skill-creator`
 
 **Homelab Plugin:**
 - Ask about Docker containers on TrueNAS → uses `truenas-docker-ops`

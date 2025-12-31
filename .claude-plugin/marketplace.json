@@ -10,11 +10,6 @@
       "description": "Project lifecycle management including git workflows, code review, and system architecture planning"
     },
     {
-      "name": "meta",
-      "source": "./meta",
-      "description": "Tools for creating and managing Claude Code skills and plugins"
-    },
-    {
       "name": "homelab",
       "source": "./homelab",
       "description": "Skills for managing homelab infrastructure including remote server management"
